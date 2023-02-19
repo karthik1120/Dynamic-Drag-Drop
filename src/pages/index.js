@@ -1,32 +1,12 @@
-import dynamic from 'next/dynamic'
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { v4 as uuid } from 'uuid'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
+import { v4 as uuid } from 'uuid'
+
+import { initialData } from './initialData'
+import { Container, Wrapper, ButtonWrapper } from '../styles/ComponentStyles'
+
 const Column = dynamic(() => import('./Column'), { ssr: false })
-
-const Container = styled.div`
-  margin: 8px;
-  padding: 8px;
-  border-radius: 3px;
-  display: flex;
-  > div {
-    background: white;
-  }
-  > button {
-    height: 25px;
-    margin: 8px;
-    margin-top: 25px;
-    border: none;
-    color: #464573;
-    background: #e3e3fc;
-    border-radius: 3px;
-  }
-`
-
-const Flex = styled.div`
-  overflow: scroll;
-`
 
 export default function Home() {
   const [state, setState] = useState(initialData)
@@ -45,8 +25,8 @@ export default function Home() {
 
     if (type === 'column') {
       const newColumnOrder = Array.from(state)
-      const [removed] = newColumnOrder.splice(source.index, 1)
-      newColumnOrder.splice(destination.index, 0, removed)
+      const [removed] = newColumnOrder?.splice(source?.index, 1)
+      newColumnOrder?.splice(destination?.index, 0, removed)
 
       const newState = [...newColumnOrder]
 
@@ -55,16 +35,16 @@ export default function Home() {
     }
 
     if (source.droppableId === destination.droppableId) {
-      const cardObj = Array.from(state).find(
+      const cardObj = Array.from(state)?.find(
         i => i?.id === destination?.droppableId
       )
 
-      const cardArr = cardObj.cards
-      const [removed] = cardArr.splice(source.index, 1)
-      cardArr.splice(destination.index, 0, removed)
+      const cardArr = cardObj?.cards
+      const [removed] = cardArr?.splice(source?.index, 1)
+      cardArr?.splice(destination?.index, 0, removed)
 
       let filterArr = state?.map(i => {
-        if (i.id === destination.droppableId) {
+        if (i.id === destination?.droppableId) {
           return { ...i, cards: cardArr }
         } else {
           return i
@@ -75,7 +55,9 @@ export default function Home() {
       return
     }
 
-    const sourceObj = Array.from(state).find(i => i?.id === source?.droppableId)
+    const sourceObj = Array.from(state)?.find(
+      i => i?.id === source?.droppableId
+    )
 
     const destObj = Array.from(state).find(
       i => i?.id === destination?.droppableId
@@ -98,12 +80,22 @@ export default function Home() {
     setState(filterArr)
   }
 
-  console.log('--result>>>>>', state)
+  const handleAddMenu = () => {
+    setState(prev => [
+      ...prev,
+      {
+        id: uuid(),
+        cards: [],
+        title: 'untitled menu',
+      },
+    ])
+  }
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="all-columns" direction="horizontal" type="column">
         {(provided, snapProvided) => (
-          <Flex>
+          <Wrapper>
             <Container {...provided.droppableProps} ref={provided.innerRef}>
               {state?.map((columnInfo, index) => (
                 <Column
@@ -115,79 +107,19 @@ export default function Home() {
               ))}
 
               {!snapProvided.draggingFromThisWith && (
-                <button
-                  onClick={() =>
-                    setState(prev => [
-                      ...prev,
-                      {
-                        id: uuid(),
-                        cards: [],
-                        title: 'untitled menu',
-                      },
-                    ])
-                  }
-                >
-                  Add a menu
-                </button>
+                <ButtonWrapper>
+                  <button className="menu" onClick={handleAddMenu}>
+                    <span className="icon">+</span>
+                    <span className="text"> Add a menu</span>
+                  </button>
+                </ButtonWrapper>
               )}
             </Container>
 
             {/* {provided.placeholder} */}
-          </Flex>
+          </Wrapper>
         )}
       </Droppable>
     </DragDropContext>
   )
 }
-const initialData = [
-  {
-    id: '1',
-    cards: [
-      {
-        title: 'lkjljllk',
-        id: '2',
-      },
-      {
-        title: 'one value ',
-        id: '3',
-      },
-    ],
-    title: 'one board',
-  },
-  {
-    id: '4',
-    cards: [
-      {
-        id: '5',
-        title: 'ten value ',
-      },
-      {
-        id: '6',
-        title: 'twenty value ',
-      },
-      {
-        id: '7',
-        title: 'fifter value ',
-      },
-    ],
-    title: 'second bore',
-  },
-  {
-    id: '8',
-    cards: [
-      {
-        id: '21',
-        title: 'one value ',
-      },
-      {
-        id: '32',
-        title: 'two value',
-      },
-      {
-        id: '74',
-        title: 'three value ',
-      },
-    ],
-    title: 'third value ',
-  },
-]

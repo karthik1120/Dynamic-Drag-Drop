@@ -2,8 +2,8 @@
 
 // npm i babel-preset-next
 const nextConfig = {
-  output: "standalone",
-  reactStrictMode: false,
+  output: 'standalone',
+  reactStrictMode: true,
   compiler: {
     // Enables the styled-components SWC transform
     styledComponents: true,
@@ -12,11 +12,11 @@ const nextConfig = {
     return [
       // Rewrite everything to `pages/index`
       {
-        source: "/:any*",
-        destination: "/",
+        source: '/:any*',
+        destination: '/',
       },
-    ];
+    ]
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
