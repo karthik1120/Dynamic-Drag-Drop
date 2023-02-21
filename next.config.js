@@ -3,7 +3,7 @@
 // npm i babel-preset-next
 const nextConfig = {
   output: 'standalone',
-  reactStrictMode: true,
+  reactStrictMode: false,
   compiler: {
     // Enables the styled-components SWC transform
     styledComponents: true,
